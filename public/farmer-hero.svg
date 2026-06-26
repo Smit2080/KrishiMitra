@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <!-- Sky -->
+  <rect width="400" height="250" fill="#e0f2fe"/>
+  <circle cx="320" cy="60" r="30" fill="#fef9c3"/>
+  <!-- Clouds -->
+  <ellipse cx="80" cy="50" rx="40" ry="20" fill="white" opacity="0.8"/>
+  <ellipse cx="200" cy="70" rx="50" ry="22" fill="white" opacity="0.6"/>
+  <!-- Mountains -->
+  <polygon points="0,250 100,150 200,250" fill="#86efac"/>
+  <polygon points="150,250 280,130 400,250" fill="#4ade80"/>
+  <!-- Field -->
+  <rect y="250" width="400" height="250" fill="#22c55e"/>
+  <rect y="250" width="400" height="30" fill="#16a34a"/>
+  <!-- Field rows -->
+  <line x1="0" y1="300" x2="400" y2="300" stroke="#15803d" stroke-width="1" opacity="0.3"/>
+  <line x1="0" y1="340" x2="400" y2="340" stroke="#15803d" stroke-width="1" opacity="0.3"/>
+  <line x1="0" y1="380" x2="400" y2="380" stroke="#15803d" stroke-width="1" opacity="0.3"/>
+  <line x1="0" y1="420" x2="400" y2="420" stroke="#15803d" stroke-width="1" opacity="0.3"/>
+  <!-- Plants in field -->
+  <g fill="#15803d" opacity="0.5">
+    <rect x="30" y="285" width="3" height="15" rx="1"/>
+    <rect x="70" y="285" width="3" height="15" rx="1"/>
+    <rect x="110" y="285" width="3" height="15" rx="1"/>
+    <rect x="150" y="285" width="3" height="15" rx="1"/>
+    <rect x="190" y="285" width="3" height="15" rx="1"/>
+    <rect x="230" y="285" width="3" height="15" rx="1"/>
+    <rect x="270" y="285" width="3" height="15" rx="1"/>
+    <rect x="310" y="285" width="3" height="15" rx="1"/>
+    <rect x="350" y="285" width="3" height="15" rx="1"/>
+  </g>
+  <!-- Farmer body -->
+  <circle cx="200" cy="180" r="30" fill="#fcd34d"/>
+  <!-- Farmer face -->
+  <circle cx="200" cy="175" r="25" fill="#d4a373"/>
+  <!-- Eyes -->
+  <circle cx="192" cy="172" r="3" fill="#1c1917"/>
+  <circle cx="208" cy="172" r="3" fill="#1c1917"/>
+  <!-- Smile -->
+  <path d="M190 182 Q200 190 210 182" stroke="#1c1917" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Turban -->
+  <path d="M175 165 Q200 145 225 165" fill="white"/>
+  <rect x="178" y="160" width="44" height="8" rx="4" fill="white"/>
+  <!-- Shirt -->
+  <rect x="180" y="205" width="40" height="60" rx="5" fill="white"/>
+  <!-- Arms -->
+  <rect x="165" y="210" width="15" height="45" rx="7" fill="#d4a373"/>
+  <rect x="220" y="210" width="15" height="45" rx="7" fill="#d4a373"/>
+  <!-- Legs -->
+  <rect x="185" y="260" width="14" height="50" rx="5" fill="#78716c"/>
+  <rect x="201" y="260" width="14" height="50" rx="5" fill="#78716c"/>
+  <!-- House in background -->
+  <rect x="310" y="200" width="50" height="50" fill="#fef3c7"/>
+  <polygon points="310,200 335,175 360,200" fill="#dc2626"/>
+  <rect x="328" y="225" width="15" height="25" fill="#92400e"/>
+</svg>
