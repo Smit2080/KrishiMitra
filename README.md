@@ -249,17 +249,19 @@ Please open an issue first for major changes.
 
 ---
 
-## 👩‍💻 Team — Tech Chaos
+## 👩‍💻 Team — Byte Coders
 
-| Name | GitHub | Email |
-|------|---------|-------|
+| Name | Role | GitHub |
+|------|------|--------|
+| Navin Shanke | Backend & Integration | [@Smit2080](https://github.com/Smit2080) |
+| Yukta Thakur | Frontend & Design | [@Yukta062006](https://github.com/Yukta062006) |
 
 ---
 
 <div align="center">
 
-Built with ❤️ by **Team Tech Chaos** for Indian farmers
+Built with ❤️ by **Team Byte Coders** for Indian farmers
 
-[Live Demo](https://krishimitra-delta.vercel.app) · [Report a Bug](https://github.com/Yukta062006/krishimitra/issues) · [Request a Feature](https://github.com/Yukta062006/krishimitra/issues)
+[Live Demo](https://krishimitra-delta.vercel.app) · [Report a Bug](https://github.com/Smit2080/KrishiMitra/issues) · [Request a Feature](https://github.com/Smit2080/KrishiMitra/issues)
 
 </div>
