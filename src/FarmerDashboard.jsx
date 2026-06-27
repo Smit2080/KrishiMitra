@@ -5,6 +5,7 @@ import LanguageSelector from './components/LanguageSelector'
 import { useLanguage } from './i18n/LanguageContext'
 import { API_URL } from './api'
 import { getLocalWeatherAdvisory } from './advisoryFallback'
+import PostHarvestAdvisor from './components/PostHarvestAdvisor'
 
 function FarmerDashboard({ user }) {
   const { t } = useLanguage()
@@ -243,6 +244,9 @@ function FarmerDashboard({ user }) {
           </button>
           <button onClick={() => setActiveTab('revenue')} className={`px-6 py-2 rounded-xl font-medium transition ${activeTab === 'revenue' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-300'}`}>
             📊 Revenue
+          </button>
+          <button onClick={() => setActiveTab('postharvest')} className={`px-6 py-2 rounded-xl font-medium transition ${activeTab === 'postharvest' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-300'}`}>
+            🏪 Sell/Store
           </button>
         </div>
 
@@ -501,6 +505,10 @@ function FarmerDashboard({ user }) {
               })()}
             </div>
           </div>
+        )}
+
+        {activeTab === 'postharvest' && (
+          <PostHarvestAdvisor user={user} />
         )}
 
       {showChat && (

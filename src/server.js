@@ -729,6 +729,96 @@ function getLocalAIResponse(query, lang = 'en') {
   return responses.default
 }
 
+// ============ POST-HARVEST ADVISOR ============
+app.post('/api/post-harvest-advice', async (req, res) => {
+  const { crop, quantity, district, state, mandiPrice, language } = req.body || {}
+  if (!crop || !district || !state) {
+    return res.status(400).json({ error: 'crop, district, and state are required' })
+  }
+
+  const langMap = {
+    en: 'English', hi: 'Hindi', pa: 'Punjabi', gu: 'Gujarati',
+    mai: 'Maithili', bho: 'Bhojpuri', ta: 'Tamil', te: 'Telugu',
+  }
+  const responseLang = langMap[language] || 'Hindi and English mix'
+  const currentMonth = new Date().toLocaleString('en-US', { month: 'long' })
+
+  const groqKey = process.env.VITE_GROQ_KEY || process.env.GROQ_API_KEY
+
+  const systemPrompt = `You are KrishiMitra's Post-Harvest Advisor, an expert in Indian agricultural markets and storage logistics.
+Your job is to help a farmer decide whether to SELL their crop immediately or STORE it for a better price later.
+
+Your response MUST follow this exact structure (respond in ${responseLang}):
+1. **RECOMMENDATION** (one of: SELL NOW / STORE FOR X DAYS / PARTIAL SELL)
+2. **CURRENT PRICE ESTIMATE** — Give a realistic price range in ₹/quintal for that crop in that region this season.
+3. **PRICE TREND** — Will prices likely go UP or DOWN in the next 7-14 days? Give a simple reason.
+4. **NEAREST STORAGE OPTIONS** — Suggest type of storage available (government cold storage, warehouse, FPO storage). Be specific to their state/district.
+5. **RISK WARNING** — Any spoilage risk if they store (perishable crop alert)?
+6. **ACTION STEPS** — Exactly 2-3 simple steps the farmer should take right now.
+
+RULES:
+- Never give vague answers. Always give a clear recommendation.
+- Use simple language. Avoid jargon.
+- If crop is highly perishable (tomato, leafy greens, milk), always lean toward SELL NOW with urgency.
+- If it is a storable crop (onion, wheat, pulses, cotton), consider storage if price trend is rising.
+- Keep response under 200 words total.
+- End with one motivating sentence for the farmer.`
+
+  const userMessage = `Crop: ${crop}
+Quantity: ${quantity || 'not specified'} quintals
+Location: ${district}, ${state}
+Current mandi price: ${mandiPrice ? '₹' + mandiPrice + '/quintal' : 'not available'}
+Current month: ${currentMonth}`
+
+  if (!groqKey) {
+    return res.json({ advice: getLocalPostHarvestAdvice(crop, district, state, language) })
+  }
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${groqKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        temperature: 0.4,
+        max_tokens: 500,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+      }),
+    })
+
+    if (!response.ok) throw new Error(`Groq ${response.status}`)
+    const data = await response.json()
+    const advice = data?.choices?.[0]?.message?.content?.trim()
+    return res.json({ advice: advice || getLocalPostHarvestAdvice(crop, district, state, language) })
+  } catch (err) {
+    console.warn('Post-harvest advisor error:', err.message)
+    return res.json({ advice: getLocalPostHarvestAdvice(crop, district, state, language) })
+  }
+})
+
+function getLocalPostHarvestAdvice(crop, district, state, lang) {
+  const perishable = ['tomato', 'spinach', 'palak', 'milk', 'curd', 'banana', 'mango', 'guava'].some(p => crop.toLowerCase().includes(p))
+  const currentMonth = new Date().toLocaleString('en-US', { month: 'long' })
+
+  if (lang === 'hi') {
+    if (perishable) {
+      return `**सिफारिश: अभी बेचें** 🚨\n\n**अनुमानित मूल्य:** ₹800-2500/क्विंटल (फसल और मौसम के अनुसार)\n**मूल्य रुझान:** ${crop} जल्दी खराब होता है, कीमत गिर सकती है।\n**भंडारण:** कोल्ड स्टोरेज (${district} जिला, ${state})\n**जोखिम:** ⚠️ यह फसल जल्दी खराब होती है। 2-3 दिन से ज्यादा न रखें।\n**कदम:**\n1. आज ही नजदीकी मंडी में ले जाएं\n2. सुबह जल्दी बेचें — ताजा माल को अच्छी कीमत मिलती है\n\n💪 आपकी मेहनत का सही दाम मिलेगा!`
+    }
+    return `**सिफारिश: 15-20 दिन स्टोर करें** 📦\n\n**अनुमानित मूल्य:** ₹1500-4000/क्विंटल (${crop}, ${currentMonth})\n**मूल्य रुझान:** ↑ अगले 2 हफ्तों में कीमत बढ़ने की संभावना\n**भंडारण:** ${state} में सरकारी वेयरहाउस या FPO स्टोरेज उपलब्ध\n**जोखिम:** कम — सूखी जगह पर रखें, नमी से बचाएं\n**कदम:**\n1. नजदीकी वेयरहाउस में स्टोर करें\n2. 15 दिन बाद मंडी भाव चेक करें\n3. भाव ₹200+ बढ़े तो बेचें\n\n💪 सब्र का फल मीठा होता है — अच्छी कीमत मिलेगी!`
+  }
+
+  if (perishable) {
+    return `**RECOMMENDATION: SELL NOW** 🚨\n\n**PRICE ESTIMATE:** ₹800-2500/quintal (varies by season)\n**PRICE TREND:** ${crop} is perishable — prices may drop with each passing day.\n**STORAGE:** Cold storage at ${district}, ${state} (check local FPO)\n**RISK WARNING:** ⚠️ High spoilage risk! Do not store more than 2-3 days.\n**ACTION STEPS:**\n1. Take to nearest mandi TODAY\n2. Sell early morning for best freshness premium\n\n💪 Your hard work deserves the right price — sell fresh, earn well!`
+  }
+  return `**RECOMMENDATION: STORE FOR 15-20 DAYS** 📦\n\n**PRICE ESTIMATE:** ₹1500-4000/quintal (${crop}, ${currentMonth})\n**PRICE TREND:** ↑ Prices likely to rise in next 2 weeks due to demand cycle.\n**STORAGE:** Government warehouse or FPO storage in ${district}, ${state}\n**RISK WARNING:** Low risk — keep in dry place, avoid moisture.\n**ACTION STEPS:**\n1. Store in nearest government warehouse\n2. Check mandi prices after 15 days\n3. Sell when price rises ₹200+/quintal\n\n💪 Patience pays — better prices are coming!`
+}
+
 // ============ DISEASE DETECTION ============
 app.post('/api/disease-detect', async (req, res) => {
   const { image } = req.body || {}
